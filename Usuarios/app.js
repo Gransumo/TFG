@@ -14,7 +14,7 @@ app.use(express.json());
 // Middleware para las rutas de usuarios
 app.use('/api', userRoutes);
 app.use('/api', friendRequestRoutes);
-app.use('./api', friendshipRoutes);
+app.use('/api', friendshipRoutes);
 
 // Puerto de escucha del servidor
 const PORT = process.env.PORT || 3000;

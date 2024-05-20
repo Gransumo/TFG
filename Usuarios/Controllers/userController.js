@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 const createUser = async (req, res) => {
 	try {
-		const { username, password } = req.body;
+		const { username, email, password } = req.body;
 
 		// Verificar si ya existe un usuario con el mismo nombre de usuario
 		const existingUser = await User.findOne({ where: { username } });
@@ -16,7 +16,7 @@ const createUser = async (req, res) => {
 		const hashedPassword = await bcrypt.hash(password, 10);
 
 		// Crear un nuevo usuario en la base de datos
-		const newUser = await User.create({ username, passwd_hash: hashedPassword });
+		const newUser = await User.create({ username, email, passwd_hash: hashedPassword });
 
 		// Devolver el nuevo usuario como respuesta
 		res.status(201).json(newUser);

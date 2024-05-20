@@ -28,7 +28,7 @@ const acceptFriendRequest = async (req, res) => {
 		const request = await FriendRequest.findOne({ where: { requestId } });
 		if (request.recipientId != req.body.userId) 
 			res.status(403).json({ error: 'Request Unauthorized' });
-		if (request && request.status === 'pending') {
+		else if (request && request.status === 'pending') {
 			request.status = 'accepted';
 			await request.save();
 			await Friendship.create({ userId: request.requesterId, friendId: request.recipientId });
@@ -45,8 +45,10 @@ const acceptFriendRequest = async (req, res) => {
 const rejectFriendRequest = async (req, res) => {
 	try {
 		const { requestId } = req.body;
-		const request = await FriendRequest.findOne({ requestId });
-		if (request && request.status === 'pending') {
+		const request = await FriendRequest.findOne({ where: { requestId } });
+		if (request.recipientId != req.body.userId) 
+			res.status(403).json({ error: 'Request Unauthorized' });
+		else if (request && request.status === 'pending') {
 			request.status = 'rejected';
 			await request.save();
 			res.status(200).json(request);
