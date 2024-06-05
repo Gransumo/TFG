@@ -77,7 +77,7 @@ const deleteMember = async (req, res) => {
 			return res.status(403).json({ error: 'Usuario no autorizado para eliminar el miembro' });
 		}
 		if (member.userId == userId && member.role == 'admin') 
-			return res.status(403).json({ error: 'No puedes salirte del grupo, eres el administrador' });
+			return res.status(403).json({ error: 'No puedes salirte del evento, eres el administrador' });
         await member.destroy();
         res.status(204).json();
     } catch (error) {
@@ -85,10 +85,29 @@ const deleteMember = async (req, res) => {
     }
 };
 
+const exitEvent = async (req, res) => {
+	try {
+		const { eventId } = req.params;
+		const { userId } = req.body;
+		const member = await Member.findOne({ where: { eventId, userId } });
+		if (!member) {
+			return res.status(404).json({ error: 'Miembro no encontrado' });
+		}
+		if (member.role == 'admin') {
+			return res.status(403).json({ error: 'No puedes salirte del evento, eres el administrador' });
+		}
+		await member.destroy();
+		res.status(204).json();
+	} catch (error) {
+		res.status(400).json({ error: error.message });
+	}
+};
+
 module.exports = {
     getMembers,
     createMember,
     getMember,
     updateMember,
-    deleteMember
+    deleteMember,
+	exitEvent
 };

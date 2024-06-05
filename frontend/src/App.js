@@ -13,6 +13,9 @@ import LoadingScreen from './components/LoadingScreen';
 import Events from './pages/Events'
 import Friends from './pages/Friends';
 import Profile from './pages/Profile';
+import Inbox from './pages/Inbox';
+import CreateEvent from './pages/CreateEvent';
+import Event from './pages/Event';
 
 
 initInterceptors();
@@ -64,8 +67,13 @@ function App() {
 			<Routes>
 				<Route path="/" element={user ? <Layout user={user} /> : <Login onLogin={login} />} >
 					<Route path='events' element={<Events />} />
+					<Route path='events/:eventCode' element={<Event />} />
 					<Route path='friends' element={<Friends />} />
 					<Route path='profile' element={<Profile />} />
+					<Route path='inbox' element={<Inbox />} />
+					<Route path='create-event' element={<CreateEvent />} />
+					<Route path='*' element={<h1>Not Found</h1>} />
+					
 				</Route>
 				<Route path="/signup" element={<Signup onSignup={signUp}/>} />
 			</Routes>

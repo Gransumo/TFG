@@ -7,9 +7,11 @@ const memberRoutes = require('./Routes/memberRoutes');
 const taskRoutes = require('./Routes/taskRoutes');
 const sequelize = require('./config/sequelize');
 const { JoinRequest } = require('./Models');
+const cors = require('cors');
  
 // Crear una instancia de la aplicación Express
 const app = express();
+app.use(cors());
 
 // Middleware para parsear las solicitudes con JSON
 app.use(express.json());

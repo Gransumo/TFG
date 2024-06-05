@@ -4,11 +4,6 @@ import { Outlet, Link } from "react-router-dom";
 
 const Layout = ({ user }) => {
 
-	const handleLogout = () => {
-		deleteToken();
-		window.location.reload();
-	}
-
 	return (
 		<div>
 			<nav>
@@ -21,6 +16,9 @@ const Layout = ({ user }) => {
 					</li>
 					<li>
 						<Link to='/profile'>Perfil</Link>
+					</li>
+					<li>
+						<Link to='/inbox'>Inbox</Link>
 					</li>
 				</ul>
 			</nav>

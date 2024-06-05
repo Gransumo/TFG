@@ -3,7 +3,8 @@ const userController = require('../Controllers/userController');
 const router = express.Router();
 const authenticateToken = require('../Middleware/authMiddleware');
 
-router.get('/whoami', authenticateToken, userController.getUser);
+router.get('/whoami', authenticateToken, userController.whoAmi);
+router.post('/get-user', authenticateToken, userController.getUser);
 router.post('/sign-up', userController.createUser);
 router.post('/login', userController.login);
 router.post('/get-users-by-ids', userController.getUserListByArrayIds);

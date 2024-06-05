@@ -21,6 +21,17 @@ const fetchSignup = async (username, email, password) => {
 	}
 }
 
+const fetchGetUser = async (username) => {
+	try {
+		console.log(username);
+		const response = await USUARIOS.post('/get-user', { username: username });
+		return response.data;
+	} catch (error) {
+		console.error('Error en fetchGetUser:', error);
+		throw error;
+	}
+}
+
 const fetchWhoami = async () => {
 	try {
 		const response = await USUARIOS.get('/whoami');
@@ -91,6 +102,16 @@ const fetchRejectFriendRequest = async (requestId) => {
 	}
 }
 
+const fetchPendingRequests = async (user) => {
+	try {
+		const response = await USUARIOS.get(`/pending-request/${user}`);
+		return response.data;
+	} catch (error) {
+		console.error('Error en fetchPendingRequests:', error);
+		throw error;
+	}
+}
+
 export {
 	fetchLogin,
 	fetchSignup,
@@ -100,5 +121,7 @@ export {
 	fetchCreateFriendRequest,
 	fetchListFriendRequests,
 	fetchAcceptFriendRequest,
-	fetchRejectFriendRequest
+	fetchRejectFriendRequest,
+	fetchGetUser,
+	fetchPendingRequests
 };

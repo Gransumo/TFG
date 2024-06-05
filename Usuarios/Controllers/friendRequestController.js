@@ -96,9 +96,23 @@ const getFriendRequests = async (req, res) => {
 	}
 };
 
+const getPendingRequests = async (req, res) => {
+	try {
+		const userId = req.body.userId;
+		const user = req.params.user;
+		const request = await FriendRequest.findOne({ where: { requesterId: userId, recipientId: user, status: 'pending' } });
+		if (!request)
+			return res.status(404).json({ error: 'No request found' });
+		res.status(200).json(request);
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+}
+
 module.exports = {
 	sendFriendRequest,
 	acceptFriendRequest,
 	rejectFriendRequest,
-	getFriendRequests
+	getFriendRequests,
+	getPendingRequests
 };

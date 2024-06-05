@@ -5,6 +5,7 @@ const { fetchEventMembers } = require('../Utils/fetchEventMembers');
 
 const getEvents = async (req, res) => {
 	try {
+		console.log(req.body);
 		const { userId } = req.body;
 		const eventsID = (await Member.findAll({ where: { userId } })).map(m => m.eventId);
 		const events = await Event.findAll({
@@ -30,21 +31,19 @@ const createEvent = async (req, res) => {
 
 const getEvent = async (req, res) => {
 	try {
-		const { eventId } = req.params;
+		const { eventCode } = req.params;
 		const { userId } = req.body;
-		const event = await Event.findByPk(eventId);
+		const event = await Event.findOne({ where: { code: eventCode }});
 		if (!event) {
 			return res.status(404).json({ error: 'Evento no encontrado' });
 		}
-		const member = await Member.findOne({ where: { eventId, userId } });
+		const member = await Member.findOne({ where: { eventId: event.id, userId } });
 		if (!member) {
 			return res.status(403).json({ error: 'Usuario no autorizado para acceder al evento' });
 		}
-		const membersID = (await Member.findAll({ where: { eventId } })).map(m => m.userId);
-		event.dataValues.role = member.role;
-		event.dataValues.members = await fetchEventMembers(membersID);
 		res.status(200).json(event);
 	} catch (error) {
+		console.log(error);
 		res.status(400).json({ error: error.message });
 	}
 };

@@ -1,7 +1,7 @@
 const { User, FriendRequest, Friendship } = require('../Models');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { get } = require('../Routes/userRoutes');
+const { Op } = require('sequelize');
 
 const createUser = async (req, res) => {
 	try {
@@ -131,7 +131,7 @@ const rejectFriendRequest = async (req, res) => {
 	}
 }
 
-const getUser = async (req, res) => {
+const whoAmi = async (req, res) => {
 	try {
 		const { userId } = req.body;
 		const user = await User.findByPk(userId, {
@@ -143,6 +143,19 @@ const getUser = async (req, res) => {
 	}
 };
 
+const getUser = async (req, res) => {
+	try {
+		const { username } = req.body;
+		const users = await User.findAll({ where: { username: { [Op.like]: `${username}%` } } });
+		if (!users)
+			return res.status(404).json({ error: 'Usuarios no encontrado' });
+		res.status(200).json(users);
+	} catch (error) {
+		console.log(error);
+		res.status(500).json({ error: error.message });
+	}
+}
+
 module.exports = {
 	createUser,
 	login,
@@ -150,5 +163,6 @@ module.exports = {
 	acceptFriendRequest,
 	rejectFriendRequest,
     getUserListByArrayIds,
-	getUser
+	getUser,
+	whoAmi
 };

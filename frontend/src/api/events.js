@@ -185,6 +185,16 @@ const  fetchDeleteMember = async (eventId, memberId) => {
 	}
 }
 
+const fetchExitEvent = async (eventId) => {
+	try {
+		const response = await EVENTOS.get(`/events/exit-event/${eventId}`);
+		return response.data;
+	} catch (error) {
+		console.error('Error en fetchExitEvent:', error);
+		throw error;
+	}
+}
+
 // Tasks Controller
 const fetchAllTasks = async (eventId) => {
 	try {
@@ -259,5 +269,6 @@ export {
 	fetchTask,
 	fetchCreateTask,
 	fetchUpdateTask,
-	fetchDeleteTask
+	fetchDeleteTask,
+	fetchExitEvent
 };
