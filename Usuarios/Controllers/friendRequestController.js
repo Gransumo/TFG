@@ -1,4 +1,30 @@
+const { request } = require('express');
 const { User, FriendRequest, Friendship } = require('../Models');
+
+const sendFriendRequestNotification = async (requesterId, recipientId, request_id) => {
+	const URL = `http://localhost:3002/api/notifications`;
+	try {
+		const response = await fetch(URL, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				userId: recipientId,
+				type: 'friendRequest',
+				data: { 
+					friendRequest : { 
+						from_user_id: requesterId,
+						request_id: request_id
+					} 
+				}
+			})
+		});
+		console.log(response);
+	} catch (error) {
+		console.error(error);
+	}
+};
 
 const sendFriendRequest = async (req, res) => {
 	try {
@@ -14,8 +40,8 @@ const sendFriendRequest = async (req, res) => {
 			return res.status(400).json({ error: 'Ya eres amigo de este usuario' });
 		if (await FriendRequest.findOne({ where: { requesterId: userId, recipientId: recipientId, status: 'pending' } })) 
 			return res.status(400).json({ error: 'Ya hay una solicitud en curso' });
-
 		const request = await FriendRequest.create({ requesterId: userId, recipientId });
+		await sendFriendRequestNotification(userId, recipientId, request.dataValues.requestId);
 		res.status(201).json(request);
 	} catch (error) {
 		res.status(400).json({ error: error.message });
@@ -24,7 +50,7 @@ const sendFriendRequest = async (req, res) => {
 
 const acceptFriendRequest = async (req, res) => {
 	try {
-		const { requestId } = req.body;
+		const { requestId } = req.params;
 		const request = await FriendRequest.findOne({ where: { requestId } });
 		if (request.recipientId != req.body.userId) 
 			res.status(403).json({ error: 'Request Unauthorized' });
@@ -44,7 +70,7 @@ const acceptFriendRequest = async (req, res) => {
 
 const rejectFriendRequest = async (req, res) => {
 	try {
-		const { requestId } = req.body;
+		const { requestId } = req.params;
 		const request = await FriendRequest.findOne({ where: { requestId } });
 		if (request.recipientId != req.body.userId) 
 			res.status(403).json({ error: 'Request Unauthorized' });
@@ -60,8 +86,19 @@ const rejectFriendRequest = async (req, res) => {
 	}
 }
 
+const getFriendRequests = async (req, res) => {
+	try {
+		const userId = req.body.userId;
+		const requests = await FriendRequest.findAll({ where: { recipientId: userId, status: 'pending' } });
+		res.status(200).json(requests);
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+};
+
 module.exports = {
 	sendFriendRequest,
 	acceptFriendRequest,
-	rejectFriendRequest
+	rejectFriendRequest,
+	getFriendRequests
 };

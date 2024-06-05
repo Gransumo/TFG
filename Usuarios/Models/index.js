@@ -16,8 +16,8 @@ FriendRequest.belongsTo(User, { as: 'requester', foreignKey: 'requesterId' });
 FriendRequest.belongsTo(User, { as: 'recipient', foreignKey: 'recipientId' });
 
 module.exports = {
-  sequelize,
-  User,
-  Friendship,
-  FriendRequest
+	sequelize,
+	User,
+	Friendship,
+	FriendRequest
 };

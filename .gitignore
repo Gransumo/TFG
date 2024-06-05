@@ -1,6 +1,12 @@
 Usuarios/node_modules
 Usuarios/.env
 
+Eventos/node_modules
+Eventos/.env
+
+Notificaciones/node_modules
+Notificaciones/.env
+
 # dependencies
 frontend/node_modules
 frontend/.pnp

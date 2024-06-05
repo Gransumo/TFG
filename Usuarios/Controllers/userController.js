@@ -1,6 +1,7 @@
 const { User, FriendRequest, Friendship } = require('../Models');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { get } = require('../Routes/userRoutes');
 
 const createUser = async (req, res) => {
 	try {
@@ -19,10 +20,25 @@ const createUser = async (req, res) => {
 		const newUser = await User.create({ username, email, passwd_hash: hashedPassword });
 
 		// Devolver el nuevo usuario como respuesta
-		res.status(201).json(newUser);
+		res.status(201).json();
 	} catch (error) {
 		res.status(500).json({ error: error.message });
 	}
+};
+
+const getUserListByArrayIds = async (req, res) => {
+    try {
+        console.log(req.body);
+        const { userIds } = req.body;
+        const users = await User.findAll({ 
+            where: { id: userIds },
+            attributes: ['id', 'username']
+        });
+        console.log(users);
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
 };
 
 const login = async (req, res) => {
@@ -47,11 +63,11 @@ const login = async (req, res) => {
 		const token = jwt.sign(
 			{ userId: user.id },
 			process.env.JWT_SECRET,
-			{ expiresIn: '1h' }
+			{ expiresIn: '240h' }
 		);
 
 		// Devolver el token como respuesta
-		res.status(200).json({ token });
+		res.status(200).json({ token, user: { id: user.id, username: user.username, email: user.email}});
 	} catch (error) {
 		res.status(500).json({ error: error.message });
 	}
@@ -115,10 +131,24 @@ const rejectFriendRequest = async (req, res) => {
 	}
 }
 
+const getUser = async (req, res) => {
+	try {
+		const { userId } = req.body;
+		const user = await User.findByPk(userId, {
+			attributes: ['username', 'email']
+		});
+		res.status(200).json(user);
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+};
+
 module.exports = {
 	createUser,
 	login,
 	sendFriendRequest,
 	acceptFriendRequest,
-	rejectFriendRequest
+	rejectFriendRequest,
+    getUserListByArrayIds,
+	getUser
 };

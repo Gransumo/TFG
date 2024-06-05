@@ -4,13 +4,13 @@ const userRoutes = require('./Routes/userRoutes');
 const friendRequestRoutes = require('./Routes/friendRequestRoutes');
 const friendshipRoutes = require('./Routes/friendshipRoutes');
 const sequelize = require('./config/sequelize');
-
+const cors = require('cors');
 // Crear una instancia de la aplicación Express
 const app = express();
 
 // Middleware para parsear las solicitudes con JSON
 app.use(express.json());
-
+app.use(cors());
 // Middleware para las rutas de usuarios
 app.use('/api', userRoutes);
 app.use('/api', friendRequestRoutes);
