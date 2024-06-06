@@ -79,7 +79,6 @@ const sendEventUpdateNotification = async (event) => {
 const updateEvent = async (req, res) => {
 	try {
 		const { eventId } = req.params;
-		const { name, description, date, location, private } = req.body;
 		const event = await Event.findByPk(eventId);
 		const userMember = await Member.findOne({ where: { eventId, userId: req.body.userId } });
 		if (!userMember || userMember.role != 'admin') {
@@ -88,11 +87,11 @@ const updateEvent = async (req, res) => {
 		if (!event) {
 			return res.status(404).json({ error: 'Evento no encontrado' });
 		}
-		if (name)			event.name = name;
-		if (description)	event.description = description;
-		if (date)			event.date = date;
-		if (location)		event.location = location;
-		if (private)		event.private = private;
+		if (req.body.name)			event.name =		req.body.name;
+		if (req.body.description)	event.description =	req.body.description;
+		if (req.body.date)			event.date =		req.body.date;
+		if (req.body.location)		event.location =	req.body.location;
+		if (req.body.private != null)		event.private =		req.body.private;
 		if( await event.save() )
 			await sendEventUpdateNotification(event);
 		res.status(200).json(event);

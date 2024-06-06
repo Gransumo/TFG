@@ -73,7 +73,6 @@ function App() {
 					<Route path='inbox' element={<Inbox />} />
 					<Route path='create-event' element={<CreateEvent />} />
 					<Route path='*' element={<h1>Not Found</h1>} />
-					
 				</Route>
 				<Route path="/signup" element={<Signup onSignup={signUp}/>} />
 			</Routes>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import FriendList from '../partials/FriendList';
 import Modal from '../partials/Modal';
-import SearchFriend from '../partials/SearchFriend';
+import SearchUsers from '../partials/SearchUsers';
 
 const Friends = () => {
 	const [modalOpen, setModalOpen] = useState(false);
@@ -16,7 +16,7 @@ const Friends = () => {
 				<button className='btn btn-success' onClick={() => { handleModal(true) }}><i className="fa-solid fa-plus"></i>AGREGAR AMIGO</button>
 			</div>
 			<Modal isOpen={modalOpen} onClose={handleModal} modalTitle={'AGREGAR AMIGO'}>
-				<SearchFriend />
+				<SearchUsers action={'Request'} />
 			</Modal>
 			<div>LISTA DE AMIGOS</div>
 			<FriendList />

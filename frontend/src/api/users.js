@@ -23,7 +23,6 @@ const fetchSignup = async (username, email, password) => {
 
 const fetchGetUser = async (username) => {
 	try {
-		console.log(username);
 		const response = await USUARIOS.post('/get-user', { username: username });
 		return response.data;
 	} catch (error) {

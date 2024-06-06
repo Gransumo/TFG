@@ -6,15 +6,20 @@ const getJoinRequests = async (req, res) => {
 	try {
 		const { eventId } = req.params;
 		const { userId } = req.body;
+		
 		const event = await Event.findByPk(eventId);
 		if (!event) return res.status(404).json({ error: 'Evento no encontrado' });
+
 		const member = await Member.findOne({ where: { eventId, userId } });
 		if (!member || member.role != 'admin') return res.status(403).json({ error: 'Usuario no autorizado para acceder a las solicitudes de unión' });
+
 		const joinRequests = await JoinRequest.findAll({ where: { eventId, status: 'pending' } });
 		const userNames = await fetchEventMembers(joinRequests.map(joinRequest => joinRequest.user_requester_Id));
+
 		joinRequests.forEach(joinRequest => {
 			joinRequest.dataValues.user_requester = userNames.find(u => u.id == joinRequest.user_requester_Id).username;
 		});
+
 		res.status(200).json(joinRequests);
 	} catch (error) {
 		res.status(400).json({ error: error.message });
@@ -57,8 +62,10 @@ const getJoinRequest = async (req, res) => {
 
 const updateJoinRequest = async (req, res) => {
 	try {
+		console.log(req.body);
 		const { joinRequestId, eventId } = req.params;
 		const { status, userId } = req.body;
+		console.log(req.body);
 		const joinRequest = await JoinRequest.findByPk(joinRequestId);
 		if (!joinRequest)
 			return res.status(404).json({ error: 'Solicitud de unión no encontrada' });

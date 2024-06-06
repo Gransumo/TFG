@@ -1,7 +1,7 @@
 
 const TOKEN_KEY = 'GETOGETHER_TOKEN';
 
-export function setToken(token) {
+export function setToken(token, username) {
 	localStorage.setItem(TOKEN_KEY, token);
 }
 

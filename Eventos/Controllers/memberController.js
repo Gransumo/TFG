@@ -103,11 +103,24 @@ const exitEvent = async (req, res) => {
 	}
 };
 
+const getAdmins = async (req, res) => {
+	try {
+		const { eventId } = req.params;
+		const { userId } = req.body;
+		const member = await Member.findOne({ where: { eventId, userId } });
+		if (member.role != 'admin') return res.status(403).json({ error: 'No eres administrador de este evento' });
+		res.status(200).json({ isAdmin: true});
+	} catch (error) {
+		res.status(400).json({ error: error.message });
+	}
+};
+
 module.exports = {
     getMembers,
     createMember,
     getMember,
     updateMember,
     deleteMember,
-	exitEvent
+	exitEvent,
+	getAdmins
 };

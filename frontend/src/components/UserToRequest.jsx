@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { fetchPendingRequests, fetchCreateFriendRequest, fetchFriendList } from "../api/users";
 
-const User = ({ user }) => {
+const UserToRequest = ({ user }) => {
 	const [requested, setRequested] = useState(false);
 	const [isFriend, setIsFriend] = useState(false);
 
@@ -35,7 +35,7 @@ const User = ({ user }) => {
 
 	const sendFriendRequest = async () => {
 		try {
-			await fetchCreateFriendRequest(user.username);
+			await fetchCreateFriendRequest();
 			setRequested(true);
 		} catch (error) {
 			console.error("Error sending friend request:", error);
@@ -54,4 +54,4 @@ const User = ({ user }) => {
 	)
 }
 
-export default User;
+export default UserToRequest;

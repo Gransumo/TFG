@@ -63,9 +63,19 @@ const fetchCreateInvitation = async (eventId, recipientId) => {
 	}
 }
 
-const fetchInvitations = async () => {
+const fetchMyInvitations = async () => {
 	try {
 		const response = await EVENTOS.get('/invitations');
+		return response.data;
+	} catch (error) {
+		console.error('Error en fetchInvitations:', error);
+		throw error;
+	}
+}
+
+const fetchPendingInvitations = async (eventId) => {
+	try {
+		const response = await EVENTOS.get(`/events/${eventId}/invitations`);
 		return response.data;
 	} catch (error) {
 		console.error('Error en fetchInvitations:', error);
@@ -136,7 +146,7 @@ const fetchJoinRequests = async (eventId) => {
 
 const fetchAcceptFriendRequest = async (eventId, requestId) => {
 	try {
-		const response = await EVENTOS.put(`/event/${eventId}/join-requests/${requestId}`, { status: 'accepted' });
+		const response = await EVENTOS.put(`/events/${eventId}/join-requests/${requestId}`, { status: 'accepted' });
 		return response.data;
 	} catch (error) {
 		console.error('Error en fetchAcceptFriendRequest:', error);
@@ -146,7 +156,7 @@ const fetchAcceptFriendRequest = async (eventId, requestId) => {
 
 const fetchRejectFriendRequest = async (eventId, requestId) => {
 	try {
-		const response = await EVENTOS.put(`/event/${eventId}/join-requests/${requestId}`, { status: 'rejected' });
+		const response = await EVENTOS.put(`/events/${eventId}/join-requests/${requestId}`, { status: 'rejected' });
 		return response.data;
 	} catch (error) {
 		console.error('Error en fetchRejectFriendRequest:', error);
@@ -191,6 +201,16 @@ const fetchExitEvent = async (eventId) => {
 		return response.data;
 	} catch (error) {
 		console.error('Error en fetchExitEvent:', error);
+		throw error;
+	}
+}
+
+const fetchIsAdmin = async (eventId) => {
+	try {
+		const response = await EVENTOS.get(`/events/admin/${eventId}`);
+		return response.data;
+	} catch (error) {
+		console.error('Error en fetchIsAdmin:', error);
 		throw error;
 	}
 }
@@ -253,7 +273,8 @@ export {
 	fetchUpdateEvent,
 	fetchDeleteEvent,
 	fetchCreateInvitation,
-	fetchInvitations,
+	fetchMyInvitations,
+	fetchPendingInvitations,
 	fetchInvitationSingle,
 	fetchAcceptInvitation,
 	fetchRejectInvitation,
@@ -270,5 +291,7 @@ export {
 	fetchCreateTask,
 	fetchUpdateTask,
 	fetchDeleteTask,
-	fetchExitEvent
+	fetchExitEvent,
+	fetchIsAdmin,
+
 };

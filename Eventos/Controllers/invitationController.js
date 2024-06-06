@@ -1,9 +1,22 @@
 const { Invitation, Event, Member } = require('../Models');
 
-const getInvitations = async (req, res) => {
+const getMyInvitations = async (req, res) => {
 	try {
 		const { userId } = req.body;
 		const invitations = await Invitation.findAll({ where: { user_invited_Id: userId, status: 'pending' } });
+		res.status(200).json(invitations);
+	} catch (error) {
+		res.status(400).json({ error: error.message });
+	}
+};
+
+const getInvitations = async (req, res) => {
+	try {
+		const { eventId } = req.params;
+		const event = await Event.findByPk(eventId);
+		if (!event)
+			return res.status(404).json({ error: 'Evento no encontrado' });
+		const invitations = await Invitation.findAll({ where: { eventId, status: 'pending' } });
 		res.status(200).json(invitations);
 	} catch (error) {
 		res.status(400).json({ error: error.message });
@@ -114,4 +127,5 @@ module.exports = {
 	getInvitation,
 	updateInvitation,
 	deleteInvitation,
+	getMyInvitations
 };
