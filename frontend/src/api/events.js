@@ -1,6 +1,16 @@
 import { EVENTOS } from "./axiosConfig";
 
 // Events Controller
+const fetchEventByCode = async (eventCode) => {
+	try {
+		const response = await EVENTOS.get(`/events/${eventCode}`);
+		return response.data;
+	} catch (error) {
+		console.error('Error en fetchEventByCode:', error);
+		throw error;
+	}
+}
+
 const fetchcreateEvent = async (eventData) => {
 	try {
 		const response = await EVENTOS.post('/events', eventData);
@@ -293,5 +303,5 @@ export {
 	fetchDeleteTask,
 	fetchExitEvent,
 	fetchIsAdmin,
-
+	fetchEventByCode
 };

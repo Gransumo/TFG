@@ -5,7 +5,7 @@ import Modal from '../partials/Modal';
 import SearchUsers from '../partials/SearchUsers';
 import JoinRequestItem from '../components/JoinRequestItem';
 
-export const MembersList = ({ getEvent, isAdmin }) => {
+export const MembersList = ({ getEvent }) => {
 	const [modalOpenAdd, setModalOpenAdd] = useState(false);
 	const [modalOpenRequest, setModalOpenRequest] = useState(false);
 	const [requests, setRequests] = useState([]);
@@ -28,13 +28,14 @@ export const MembersList = ({ getEvent, isAdmin }) => {
 
 		async function cargarSolicitudes() {
 			try {
+				if (!getEvent().private) return;
+				if (getEvent().isAdmin) return;
 				const response = await fetchJoinRequests(getEvent().id);
 				setRequests(response);
 			} catch (error) {
 				console.error("Error obteniendo solicitudes:", error);
 			}
 		}
-
 		cargarMiembros();
 		cargarSolicitudes();
 	}, []);
@@ -86,11 +87,11 @@ export const MembersList = ({ getEvent, isAdmin }) => {
 	return (
 		<div>
 			<h2>Participantes</h2>
-			{isAdmin && <button className="btn btn-primary" onClick={() => { handleModalAdd(true) }}>Agregar miembro</button>}
+			{getEvent().isAdmin && <button className="btn btn-primary" onClick={() => { handleModalAdd(true) }}>Agregar miembro</button>}
 			<Modal isOpen={modalOpenAdd} onClose={handleModalAdd} modalTitle={'Invitar Miembro'}>
 				<SearchUsers action={'Invitation'} event={getEvent()} />
 			</Modal>
-			{isAdmin && getEvent().private && <button className="btn btn-primary" onClick={() => { handleModalRequest(true) }}>Ver Solicitudes de Union</button>}
+			{getEvent().isAdmin && getEvent().private && <button className="btn btn-primary" onClick={() => { handleModalRequest(true) }}>Ver Solicitudes de Union</button>}
 			<Modal isOpen={modalOpenRequest} onClose={handleModalRequest} modalTitle={"Solicitudes de Union"}>
 				{
 					(requests.length === 0) ?
@@ -102,7 +103,7 @@ export const MembersList = ({ getEvent, isAdmin }) => {
 			</Modal>
 
 			{members.map((member) => (
-				<MemberItem key={member.id} member={member} onDelete={deleteMember} isAdmin={isAdmin} />
+				<MemberItem key={member.id} member={member} onDelete={deleteMember} getEvent={getEvent} />
 			))}
 		</div>
 	)

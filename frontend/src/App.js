@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
-import { setToken, getToken } from './utils/token';
+import { setToken, getToken, deleteToken } from './utils/token';
 
 import { fetchLogin, fetchWhoami, fetchSignup } from "./api/users";
 import { initInterceptors } from './api/axiosConfig';
@@ -60,12 +60,18 @@ function App() {
 		}
 	}
 
+	const logout = () => {
+		deleteToken();
+		setUser(null);
+		window.location.href = '/';
+	}
+
 	if (cargandoUsuario) 
 		return (<LoadingScreen />);
 	return (
 		<div>
 			<Routes>
-				<Route path="/" element={user ? <Layout user={user} /> : <Login onLogin={login} />} >
+				<Route path="/" element={user ? <Layout user={user} onLogout={logout} /> : <Login onLogin={login} />} >
 					<Route path='events' element={<Events />} />
 					<Route path='events/:eventCode' element={<Event />} />
 					<Route path='friends' element={<Friends />} />

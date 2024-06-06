@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom';
-import { fetchEvent, fetchIsAdmin, fetchUpdateEvent } from '../api/events';
+import { fetchEvent, fetchIsAdmin, fetchUpdateEvent, fetchExitEvent } from '../api/events';
 import MembersList from '../partials/MembersList';
 import Modal from '../partials/Modal';
 
@@ -17,8 +17,9 @@ export const Event = () => {
 	const { eventCode } = useParams();
 	const [event, setEvent] = useState(null);
 	const [loading, setLoading] = useState(true);
-	const [isAdmin, setIsAdmin] = useState(false);
 	const [modalOpen, setModalOpen] = useState(false);
+	const [modalExit, setModalExit] = useState(false);
+	const [warning, setWarning] = useState(null);
 
 	const getEvent = () => {
 		return event;
@@ -26,6 +27,10 @@ export const Event = () => {
 
 	const handleModal = (status) => {
 		setModalOpen(status);
+	}
+
+	const handleExitModal = (status) => {
+		setModalExit(status);
 	}
 
 	const handleEdit = (e) => {
@@ -65,18 +70,29 @@ export const Event = () => {
 		async function checkAdmin() {
 			try {
 				const response = await fetchIsAdmin(event.id);
-				setIsAdmin(response.isAdmin);
+				setEvent({
+					...event,
+					admin: response.isAdmin
+				});
 			} catch (error) {
 				console.error('Error obteniendo administrador:', error);
 			}
 		}
 		if (event)
 			checkAdmin();
-	}, [event]);
+	}, []);
 
-	const handlePrivate = () => {
-		const private_value = document.getElementById('private');
-		private_value.checked = !private_value.checked;
+	const salirEvento = async (id) => {
+		try {
+			const response = await fetchExitEvent(id);
+			window.location.href = '/events';
+		} catch (error) {
+			const jsonError = JSON.parse(error.request.response);
+			console.error("Error saliendo del evento:", error);
+			if (error.request.status === 403) {
+				setWarning(jsonError.error)
+			}
+		}
 	}
 
 	if (loading) {
@@ -86,6 +102,7 @@ export const Event = () => {
 		<>
 			<div>
 				<h1>{event.name}</h1>
+				<h3>{event.code}</h3>
 			</div>
 			<h2>Descripción:</h2>
 			<p>{event.description}</p>
@@ -93,7 +110,8 @@ export const Event = () => {
 			<p>{(event.date) ? formatDate(event.date) : 'No definida'}</p>
 			<h2>Ubicacion</h2>
 			<p>{(event.location) ? event.location : 'No definida'}</p>
-			{isAdmin && <i className="fa-solid fa-pen-to-square" onClick={() => { handleModal(true) }}></i>}
+			{event.admin && <i className="fa-solid fa-pen-to-square" onClick={() => { handleModal(true) }}></i>}
+			<i className="fa-solid fa-right-from-bracket" onClick={() => { handleExitModal(true) }}></i>
 			<Modal isOpen={modalOpen} onClose={handleModal} modalTitle={'EDITAR EVENTO'}>
 				<form onSubmit={handleEdit} style={{ width: '500px' }}>
 					<div className="form-group">
@@ -121,7 +139,12 @@ export const Event = () => {
 					<button className="btn btn-primary mt-2 form-control" type='submit'>Editar</button>
 				</form>
 			</Modal>
-			<MembersList getEvent={getEvent} isAdmin={isAdmin} />
+			<Modal isOpen={modalExit} onClose={ handleExitModal} modalTitle={'Salir de evento'}>
+				{warning && <div className="alert alert-danger">{warning}</div>}
+				<p>¿Estás seguro que deseas salir del evento {event.name}?</p>
+				<button onClick={() => { salirEvento(event.id) }} className="btn btn-danger">Salir</button>
+			</Modal>
+			<MembersList getEvent={getEvent} />
 		</>
 	)
 }

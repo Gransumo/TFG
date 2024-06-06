@@ -1,7 +1,5 @@
 const { Event, Member } = require('../Models');
-const { use } = require('../Routes/eventRoutes');
 const { generateUniqueCode } = require('../Utils/generateUniqueCode');
-const { fetchEventMembers } = require('../Utils/fetchEventMembers');
 
 const getEvents = async (req, res) => {
 	try {
@@ -37,11 +35,7 @@ const getEvent = async (req, res) => {
 		if (!event) {
 			return res.status(404).json({ error: 'Evento no encontrado' });
 		}
-		const member = await Member.findOne({ where: { eventId: event.id, userId } });
-		if (!member) {
-			return res.status(403).json({ error: 'Usuario no autorizado para acceder al evento' });
-		}
-		res.status(200).json(event);
+		res.status(200).json({ id: event.id, name: event.name, private: event.private });
 	} catch (error) {
 		console.log(error);
 		res.status(400).json({ error: error.message });

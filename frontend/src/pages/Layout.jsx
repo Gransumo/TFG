@@ -2,7 +2,7 @@ import React from "react";
 import { deleteToken } from "../utils/token";
 import { Outlet, Link } from "react-router-dom";
 
-const Layout = ({ user }) => {
+const Layout = ({ user, onLogout }) => {
 
 	return (
 		<div>
@@ -19,6 +19,9 @@ const Layout = ({ user }) => {
 					</li>
 					<li>
 						<Link to='/inbox'>Inbox</Link>
+					</li>
+					<li>
+						<Link to='/' onClick={() => { onLogout() }}>Cerrar sesión</Link>
 					</li>
 				</ul>
 			</nav>

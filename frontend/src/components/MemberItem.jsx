@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import Modal from '../partials/Modal';
 import { fetchDeleteMember } from '../api/events';
 
-export const MemberItem = ({ member, isAdmin, onDelete }) => {
+export const MemberItem = ({ member, getEvent, onDelete }) => {
 	const [modalOpen, setModalOpen] = useState(false);
 
 	const handleModal = (status) => {
@@ -17,7 +17,7 @@ export const MemberItem = ({ member, isAdmin, onDelete }) => {
 			<div className="border border-dark container p-2">
 				<h3>{member.username}</h3>
 				{
-					isAdmin && member.role != 'admin' && <button className="btn btn-danger" onClick={() => { handleModal(true) }}>
+					getEvent().isAdmin && member.role != 'admin' && <button className="btn btn-danger" onClick={() => { handleModal(true) }}>
 						<i className="fa-solid fa-trash"></i>
 					</button>
 				}
