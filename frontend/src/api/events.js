@@ -31,9 +31,9 @@ const fetchMyEvents = async () => {
 	}
 }
 
-const fetchEvent = async (eventCode) => {
+const fetchEvent = async (id) => {
 	try {
-		const response = await EVENTOS.get(`/events/${eventCode}`);
+		const response = await EVENTOS.get(`/events/getById/${id}`);
 		return response.data;
 	} catch (error) {
 		console.error('Error en fetchEvent:', error);

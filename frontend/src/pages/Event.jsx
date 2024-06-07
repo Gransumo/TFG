@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom';
-import { fetchEvent, fetchUpdateEvent, fetchExitEvent } from '../api/events';
+import { fetchEventByCode, fetchExitEvent, fetchDeleteEvent } from '../api/events';
 import MembersList from '../partials/MembersList';
 import Modal from '../partials/Modal';
 import { UpdateEventForm } from '../components/UpdateEventForm';
@@ -30,7 +30,7 @@ export const Event = () => {
 	useEffect(() => {
 		async function cargarEvento() {
 			try {
-				const response = await fetchEvent(eventCode);
+				const response = await fetchEventByCode(eventCode);
 				console.log(response);
 				setEvent(response);
 				setLoading(false);
@@ -66,6 +66,15 @@ export const Event = () => {
 		}
 	}
 
+	const deleteEvent = async () => {
+		try {
+			await fetchDeleteEvent(event.id);
+			window.location.href = '/events';
+		} catch (error) {
+			console.error("Error eliminando evento:", error);
+		}
+	}
+
 	const handleTaskList = (status) => {
 		setModalTaskList(status);
 	}
@@ -89,15 +98,30 @@ export const Event = () => {
 			<Modal isOpen={modalTaskList} onClose={handleTaskList} modalTitle={'TAREAS'}>
 				{event.isAdmin ? (<TaskListAsAdmin event={event} />) : (<TaskListAsMember event={event} />)}
 			</Modal>
+
 			{event.isAdmin && <i className="fa-solid fa-pen-to-square" onClick={() => { handleModal(true) }}></i>}
-			<i className="fa-solid fa-right-from-bracket" onClick={() => { handleExitModal(true) }}></i>
+			{(event.isAdmin)
+				? <i className="fa-solid fa-trash" onClick={() => { handleExitModal(true) }}></i>
+				: <i className="fa-solid fa-right-from-bracket" onClick={() => { handleExitModal(true) }}></i>
+			}
 			<Modal isOpen={modalOpen} onClose={handleModal} modalTitle={'EDITAR EVENTO'}>
 				<UpdateEventForm event={event} />
 			</Modal>
-			<Modal isOpen={modalExit} onClose={ handleExitModal} modalTitle={'Salir de evento'}>
-				{warning && <div className="alert alert-danger">{warning}</div>}
-				<p>¿Estás seguro que deseas salir del evento {event.name}?</p>
-				<button onClick={() => { salirEvento(event.id) }} className="btn btn-danger">Salir</button>
+			<Modal isOpen={modalExit} onClose={handleExitModal} modalTitle={'Salir de evento'}>
+				{(event.isAdmin)
+					? (
+						<div>
+							<p>¿Estás seguro de querer eliminar este evento? Se borrarán todos los registros del evento</p>
+							<button onClick={deleteEvent} className="btn btn-danger">Eliminar</button>
+						</div>
+					)
+					: (
+						<div>
+							<p>¿Estás seguro que deseas salir del evento {event.name}?</p>
+							<button onClick={() => { salirEvento(event.id) }} className="btn btn-danger">Salir</button>
+						</div>
+					)
+				}
 			</Modal>
 			<MembersList getEvent={getEvent} />
 		</>

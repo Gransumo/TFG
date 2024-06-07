@@ -1,4 +1,3 @@
-const { request } = require('express');
 const { User, FriendRequest, Friendship } = require('../Models');
 
 const sendFriendRequestNotification = async (requesterId, recipientId, request_id) => {
@@ -52,17 +51,18 @@ const acceptFriendRequest = async (req, res) => {
 	try {
 		const { requestId } = req.params;
 		const request = await FriendRequest.findOne({ where: { requestId } });
-		if (request.recipientId != req.body.userId) 
-			res.status(403).json({ error: 'Request Unauthorized' });
-		else if (request && request.status === 'pending') {
-			request.status = 'accepted';
-			await request.save();
-			await Friendship.create({ userId: request.requesterId, friendId: request.recipientId });
-			await Friendship.create({ userId: request.recipientId , friendId: request.requesterId });
-			res.status(200).json({ message: 'Request Accepted' });
-		} else {
-			res.status(404).json({ error: 'Friend request not found or already processed.' });
-		}
+		if (!request)
+			return res.status(404).json({ error: 'Friend request not found.' });
+
+		if (request.status !== 'pending')
+			return res.status(400).json({ error: 'Friend request already processed.' });
+		
+		request.status = 'accepted';
+		await Friendship.create({ userId: request.requesterId, friendId: request.recipientId });
+		await Friendship.create({ userId: request.recipientId, friendId: request.requesterId });
+		await request.save();
+		res.status(200).json({ message: 'Request Accepted' });
+
 	} catch (error) {
 		res.status(400).json({ error: error.message });
 	}
@@ -71,17 +71,16 @@ const acceptFriendRequest = async (req, res) => {
 const rejectFriendRequest = async (req, res) => {
 	try {
 		const { requestId } = req.params;
-		const request = await FriendRequest.findOne({ where: { requestId } });
-		if (request.recipientId != req.body.userId) 
-			res.status(403).json({ error: 'Request Unauthorized' });
-		else if (request && request.status === 'pending') {
-			request.status = 'rejected';
-			await request.save();
-			res.status(200).json(request);
-		} else {
-			res.status(404).json({ error: 'Friend request not found or already processed.' });
-		}
+		const request = await FriendRequest.findOne({where: { requestId }});
+		if (!request)
+			return res.status(404).json({ error: 'Friend request not found.' });
+		if (request.status !== 'pending')
+			return res.status(400).json({ error: 'Friend request already processed.' });
+		request.status = 'rejected';
+		await request.save();
+		return res.status(200).json(request);
 	} catch (error) {
+		console.log(error);
 		res.status(400).json({ error: error.message });
 	}
 }
@@ -90,6 +89,7 @@ const getFriendRequests = async (req, res) => {
 	try {
 		const userId = req.body.userId;
 		const requests = await FriendRequest.findAll({ where: { recipientId: userId, status: 'pending' } });
+		console.log(requests);
 		res.status(200).json(requests);
 	} catch (error) {
 		res.status(500).json({ error: error.message });

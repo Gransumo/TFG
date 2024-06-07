@@ -125,10 +125,24 @@ const deleteEvent = async (req, res) => {
 	}
 };
 
+const getEventById = async (req, res) => {
+	try {
+		const { eventId } = req.params;
+		const event = await Event.findByPk(eventId);
+		if (!event) {
+			return res.status(404).json({ error: 'Evento no encontrado' });
+		}
+		res.status(200).json({ eventId: event.id, name: event.name});
+	} catch (error) {
+		console.log(error);
+	}
+}
+
 module.exports = {
 	getEvents,
 	createEvent,
 	getEvent,
 	updateEvent,
-	deleteEvent
+	deleteEvent,
+	getEventById
 };

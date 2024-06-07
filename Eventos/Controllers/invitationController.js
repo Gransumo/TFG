@@ -100,6 +100,7 @@ const updateInvitation = async (req, res) => {
 		await invitation.save();
 		if (status === 'accepted') {
 			await Member.create({ eventId: invitation.eventId, userId, role: 'member' });
+			
 		}
 		res.status(200).json(invitation);
 	} catch (error) {

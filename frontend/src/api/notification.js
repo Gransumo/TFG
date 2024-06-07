@@ -1,8 +1,8 @@
-import NOTIFICACIONES from './axiosConfig';
+import { NOTIFICACIONES } from './axiosConfig';
 
 const fetchNotifications = async () => {
 	try {
-		const response = await NOTIFICACIONES.get('/notifications'	);
+		const response = await NOTIFICACIONES.get('/notifications');
 		return response.data;
 	} catch (error) {
 		console.error('Error en fetchNotifications:', error);

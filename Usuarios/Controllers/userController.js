@@ -27,18 +27,18 @@ const createUser = async (req, res) => {
 };
 
 const getUserListByArrayIds = async (req, res) => {
-    try {
-        console.log(req.body);
-        const { userIds } = req.body;
-        const users = await User.findAll({ 
-            where: { id: userIds },
-            attributes: ['id', 'username']
-        });
-        console.log(users);
-        res.status(200).json(users);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
+	try {
+		console.log(req.body);
+		const { userIds } = req.body;
+		const users = await User.findAll({
+			where: { id: userIds },
+			attributes: ['id', 'username']
+		});
+		console.log(users);
+		res.status(200).json(users);
+	} catch (error) {
+		res.status(400).json({ error: error.message });
+	}
 };
 
 const login = async (req, res) => {
@@ -67,69 +67,11 @@ const login = async (req, res) => {
 		);
 
 		// Devolver el token como respuesta
-		res.status(200).json({ token, user: { id: user.id, username: user.username, email: user.email}});
+		res.status(200).json({ token, user: { id: user.id, username: user.username, email: user.email } });
 	} catch (error) {
 		res.status(500).json({ error: error.message });
 	}
 };
-
-const sendFriendRequest = async (req, res) => {
-	try {
-		const { userId, recipientUsername } = req.body;
-		const recipientUser = await User.findOne({where: { username: recipientUsername } });
-		const recipientId = recipientUser.id;
-
-		if (!recipientUser)
-			return res.status(404).json({ error: 'Usuario no encontrado' });
-		if (recipientId === userId)
-			return res.status(400).json({ error: 'No puedes enviarte solicitud de amistad a ti mismo' });
-		if (await Friendship.findOne({ where: { userId, friendId: recipientId } }) != null)
-			return res.status(400).json({ error: 'Ya eres amigo de este usuario' });
-		if (await FriendRequest.findOne({ where: { requesterId: userId, recipientId: recipientId, status: 'pending' } })) 
-			return res.status(400).json({ error: 'Ya hay una solicitud en curso' });
-
-		const request = await FriendRequest.create({ requesterId: userId, recipientId });
-		res.status(201).json(request);
-	} catch (error) {
-		res.status(400).json({ error: error.message });
-	}
-};
-
-const acceptFriendRequest = async (req, res) => {
-	try {
-		const { requestId } = req.body;
-		const request = await FriendRequest.findOne({ where: { requestId } });
-		if (request.requesterId != req.body.userId) 
-			res.status(403).json({ error: 'Request Unauthorized' });
-		if (request && request.status === 'pending') {
-			request.status = 'accepted';
-			await request.save();
-			await Friendship.create({ userId: request.requesterId, friendId: request.recipientId });
-			await Friendship.create({ userId: request.recipientId , friendId: request.requesterId });
-			res.status(200).json({ message: 'Request Accepted' });
-		} else {
-			res.status(404).json({ error: 'Friend request not found or already processed.' });
-		}
-	} catch (error) {
-		res.status(400).json({ error: error.message });
-	}
-};
-
-const rejectFriendRequest = async (req, res) => {
-	try {
-		const { requestId } = req.body;
-		const request = await FriendRequest.findOne({ requestId });
-		if (request && request.status === 'pending') {
-			request.status = 'rejected';
-			await request.save();
-			res.status(200).json(request);
-		} else {
-			res.status(404).json({ error: 'Friend request not found or already processed.' });
-		}
-	} catch (error) {
-		res.status(400).json({ error: error.message });
-	}
-}
 
 const whoAmi = async (req, res) => {
 	try {
@@ -149,7 +91,20 @@ const getUser = async (req, res) => {
 		const users = await User.findAll({ where: { username: { [Op.like]: `${username}%` } } });
 		if (!users)
 			return res.status(404).json({ error: 'Usuarios no encontrado' });
-		res.status(200).json(users);
+		res.status(200).json(users.filter(user => user.id !== req.body.userId));
+	} catch (error) {
+		console.log(error);
+		res.status(500).json({ error: error.message });
+	}
+}
+
+const getUserById = async (req, res) => {
+	try {
+		const { userRequestId } = req.params;
+		const user = await User.findByPk(userRequestId);
+		if (!user)
+			return res.status(404).json({ error: 'Usuario no encontrado' });
+		res.status(200).json({ id: user.id, username: user.username, email: user.email });
 	} catch (error) {
 		console.log(error);
 		res.status(500).json({ error: error.message });
@@ -159,10 +114,8 @@ const getUser = async (req, res) => {
 module.exports = {
 	createUser,
 	login,
-	sendFriendRequest,
-	acceptFriendRequest,
-	rejectFriendRequest,
-    getUserListByArrayIds,
+	getUserListByArrayIds,
 	getUser,
-	whoAmi
+	whoAmi,
+	getUserById
 };

@@ -2,11 +2,13 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const notificationRoutes = require('./Routes/notificationRoutes');
+const cors = require('cors');
 
 const app = express();
 const port = process.env.PORT || 3002;
 
 app.use(express.json());
+app.use(cors());
 app.use('/api', notificationRoutes);
 
 mongoose.connect(process.env.MONGODB_URI, {

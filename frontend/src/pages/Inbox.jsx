@@ -1,10 +1,12 @@
-import React from "react";
-
-
+import React, { useState, useEffect } from "react";
+import NotificationList from '../partials/NotificationList';
 const Inbox = () => {
+
 	return (
 		<div>
-			<div>INBOX</div>
+			
+			<h1>Notificaciones</h1>
+			<NotificationList />
 		</div>
 	);
 }

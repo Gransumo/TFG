@@ -1,6 +1,5 @@
 import { USUARIOS } from "./axiosConfig";
 
-
 const fetchLogin = async (username, password) => {
 	try {
 		const response = await USUARIOS.post('/login', { username, password });
@@ -111,6 +110,16 @@ const fetchPendingRequests = async (user) => {
 	}
 }
 
+const fetchGetUserById = async (userRequestId) => {
+	try {
+		const response = await USUARIOS.get(`/get-user/${userRequestId}`);
+		return response.data;
+	} catch (error) {
+		console.error('Error en fetchGetUserById:', error);
+		throw error;
+	}
+}
+
 export {
 	fetchLogin,
 	fetchSignup,
@@ -122,5 +131,6 @@ export {
 	fetchAcceptFriendRequest,
 	fetchRejectFriendRequest,
 	fetchGetUser,
-	fetchPendingRequests
+	fetchPendingRequests,
+	fetchGetUserById
 };

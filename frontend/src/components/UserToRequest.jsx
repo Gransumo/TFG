@@ -21,7 +21,6 @@ const UserToRequest = ({ user }) => {
 		async function checkFriend() {
 			try {
 				const response = await fetchFriendList();
-				console.log(response);
 				const friend = response.friends.find((friend) => friend.id === user.id);
 				if (friend)
 					setIsFriend(true);
@@ -35,7 +34,7 @@ const UserToRequest = ({ user }) => {
 
 	const sendFriendRequest = async () => {
 		try {
-			await fetchCreateFriendRequest();
+			await fetchCreateFriendRequest(user.username);
 			setRequested(true);
 		} catch (error) {
 			console.error("Error sending friend request:", error);

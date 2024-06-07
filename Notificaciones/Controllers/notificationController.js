@@ -28,6 +28,7 @@ const createNotification = async (req, res) => {
 	// Check if the data is valid
 	if (type === 'eventInvitation' && (!data.event_invitation || !data.event_invitation.event_id || !data.event_invitation.event_invitation_id))
 		return res.status(500).json({ error: 'Invalid invitation data' });
+	
 	// Check if the data is valid
 	if (type === 'eventUpdate' && (!data.event_update || !data.event_update.event_id || !data.event_update.update_info))
 		return res.status(500).json({ error: 'Invalid update data' });
@@ -53,9 +54,12 @@ const createNotification = async (req, res) => {
 
 const setReadNotification = async (req, res) => {
 	try {
-		const { notificationId } = req.params;
-		const { userId } = req.body;
-		const notification = await Notification.findById(notificationId);
+		const { id } = req.params;
+		console.log(id);
+		const notification = await Notification.findById(id);
+		console.log(notification);
+		if (!notification)
+			return res.status(404).json({ error: 'Notification not found' });
 		notification.read = true;
 		await notification.save();
 		res.status(200).json(notification);
