@@ -22,11 +22,11 @@ const getAllTasks = async (req, res) => {
 
 const getTasks = async (req, res) => {
     try {
-		const { eventId, userTaskId } = req.params;
+		const { eventId } = req.params;
 		const { userId } = req.body;
 		const memberByUser = await Member.findOne({ where: { userId, eventId } });
 		if (!memberByUser) return res.status(403).json({ error: 'Usuario no autorizado para acceder a las tareas del evento' });
-        const tasks = await Task.findAll({ where: { eventId, userId: userTaskId } });
+        const tasks = await Task.findAll({ where: { eventId, userId } });
         res.status(200).json(tasks);
     } catch (error) {
         res.status(400).json({ error: error.message });

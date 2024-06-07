@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Modal from "../partials/Modal";
-import { fetchMyEvents, fetchEvent, fetchExitEvent, fetchIsAdmin } from "../api/events";
+import { fetchExitEvent } from "../api/events";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 const EventItem = ({ event, onLeave }) => {
 	const [modalOpen, setModalOpen] = useState(false);
 	const [warning, setWarning] = useState(null);
-	const [isAdmin, setIsAdmin] = useState(false);
 
 	const salirEvento = async (id) => {
 		try {
@@ -21,19 +20,6 @@ const EventItem = ({ event, onLeave }) => {
 			}
 		}
 	}
-
-	useEffect(() => {
-		async function checkAdmin() {
-			try {
-				const response = await fetchIsAdmin(event.id);
-				setIsAdmin(response.isAdmin);
-			} catch (error) {
-				console.error('Error obteniendo administrador:', error);
-			}
-		}
-		if (event)
-			checkAdmin();
-	}, [event]);
 
 	const handlerLeave = () => {
 		salirEvento(event.id);
@@ -54,7 +40,7 @@ const EventItem = ({ event, onLeave }) => {
 						<h3>{event.name}</h3>
 					</Link>
 				</div>
-				{!isAdmin && (
+				{event.isAdmin && (
 					<ExitButton className="btn btn-danger" onClick={() => { handleModal(true) }}>
 						<i className="fa-solid fa-right-from-bracket" onClick={() => { handleModal(true) }}></i>
 					</ExitButton>

@@ -11,7 +11,7 @@ const fetchEventByCode = async (eventCode) => {
 	}
 }
 
-const fetchcreateEvent = async (eventData) => {
+const fetchCreateEvent = async (eventData) => {
 	try {
 		const response = await EVENTOS.post('/events', eventData);
 		return response.data;
@@ -31,9 +31,9 @@ const fetchMyEvents = async () => {
 	}
 }
 
-const fetchEvent = async (eventId) => {
+const fetchEvent = async (eventCode) => {
 	try {
-		const response = await EVENTOS.get(`/events/${eventId}`);
+		const response = await EVENTOS.get(`/events/${eventCode}`);
 		return response.data;
 	} catch (error) {
 		console.error('Error en fetchEvent:', error);
@@ -154,6 +154,16 @@ const fetchJoinRequests = async (eventId) => {
 	}
 }
 
+const fetchJoinRequest = async (eventId) => {
+	try {
+		const response = await EVENTOS.get(`/events/${eventId}/join-request`);
+		return response.data;
+	} catch (error) {
+		console.error('Error en fetchJoinRequest:', error);
+		throw error;
+	}
+}
+
 const fetchAcceptFriendRequest = async (eventId, requestId) => {
 	try {
 		const response = await EVENTOS.put(`/events/${eventId}/join-requests/${requestId}`, { status: 'accepted' });
@@ -236,9 +246,9 @@ const fetchAllTasks = async (eventId) => {
 	}
 }
 
-const fetchTask = async (eventId, userTaskId) => {
+const fetchTask = async (eventId) => {
 	try {
-		const response = await EVENTOS.get(`/events/${eventId}/tasks/${userTaskId}`);
+		const response = await EVENTOS.get(`/events/${eventId}/tasks/my`);
 		return response.data;
 	} catch (error) {
 		console.error('Error en fetchTask:', error);
@@ -246,9 +256,9 @@ const fetchTask = async (eventId, userTaskId) => {
 	}
 }
 
-const fetchCreateTask = async (eventId, taskData) => {
+const fetchCreateTask = async (eventId, description, userAsigned) => {
 	try {
-		const response = await EVENTOS.post(`/events/${eventId}/tasks`, taskData);
+		const response = await EVENTOS.post(`/events/${eventId}/tasks`, {description, userAsigned});
 		return response.data;
 	} catch (error) {
 		console.error('Error en fetchCreateTask:', error);
@@ -277,7 +287,7 @@ const fetchDeleteTask = async (eventId, taskId) => {
 }
 
 export {
-	fetchcreateEvent,
+	fetchCreateEvent,
 	fetchMyEvents,
 	fetchEvent,
 	fetchUpdateEvent,
@@ -303,5 +313,6 @@ export {
 	fetchDeleteTask,
 	fetchExitEvent,
 	fetchIsAdmin,
-	fetchEventByCode
+	fetchEventByCode,
+	fetchJoinRequest
 };

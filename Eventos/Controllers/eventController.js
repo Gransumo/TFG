@@ -18,11 +18,21 @@ const getEvents = async (req, res) => {
 
 const createEvent = async (req, res) => {
 	try {
-		const { userId, name, description, date, location, private } = req.body;
-		const event = await Event.create({ name: name, code: generateUniqueCode(), description, date, location, private: private });
-		await Member.create({ userId, eventId: event.id, role: 'admin' });
-		res.status(201).json(event);
+		var event = {};
+		const { userId } = req.body;
+		if (req.body.name)			event.name =		req.body.name;
+		if (req.body.description)	event.description =	req.body.description;
+		if (req.body.date)			event.date =		req.body.date;
+		if (req.body.location)		event.location =	req.body.location;
+		if (req.body.private != null)		event.private =		req.body.private;
+		console.log(event);
+		event.code = generateUniqueCode();
+		const newEvent = await Event.create(event);
+		console.log(newEvent);
+		await Member.create({ userId, eventId: newEvent.id, role: 'admin' });
+		res.status(201).json(newEvent);
 	} catch (error) {
+		console.log(error);
 		res.status(400).json({ error: error.message });
 	}
 };
@@ -35,7 +45,10 @@ const getEvent = async (req, res) => {
 		if (!event) {
 			return res.status(404).json({ error: 'Evento no encontrado' });
 		}
-		res.status(200).json({ id: event.id, name: event.name, private: event.private });
+		const member = await Member.findOne({ where: { eventId: event.dataValues.id, userId } });
+		if (member)
+			event.dataValues.isAdmin = (member.role == 'admin') ? true : false;
+		res.status(200).json(event);
 	} catch (error) {
 		console.log(error);
 		res.status(400).json({ error: error.message });

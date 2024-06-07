@@ -11,6 +11,11 @@ export const MembersList = ({ getEvent }) => {
 	const [requests, setRequests] = useState([]);
 	const [members, setMembers] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const [, setRender] = useState(0);
+
+	const forceUpdate = () => {
+		setRender(prevRender => prevRender + 1);
+	};
 
 	useEffect(() => {
 		async function cargarMiembros() {
@@ -29,7 +34,7 @@ export const MembersList = ({ getEvent }) => {
 		async function cargarSolicitudes() {
 			try {
 				if (!getEvent().private) return;
-				if (getEvent().isAdmin) return;
+				if (!getEvent().isAdmin) return;
 				const response = await fetchJoinRequests(getEvent().id);
 				setRequests(response);
 			} catch (error) {
@@ -65,6 +70,7 @@ export const MembersList = ({ getEvent }) => {
 			console.log(response);
 			const newRequests = requests.filter(request => request.id !== requestId);
 			setRequests(newRequests);
+			forceUpdate();
 		} catch (error) {
 			console.error("Error aceptando solicitud:", error);
 		}
@@ -95,10 +101,10 @@ export const MembersList = ({ getEvent }) => {
 			<Modal isOpen={modalOpenRequest} onClose={handleModalRequest} modalTitle={"Solicitudes de Union"}>
 				{
 					(requests.length === 0) ?
-					('No hay solicitudes de union pendientes') :
-					requests.map((request) => (
-						<JoinRequestItem key={request.id} request={request} onAccept={handleAcceptRequest} onReject={handleRejectRequest}/>
-					))
+						('No hay solicitudes de union pendientes') :
+						requests.map((request) => (
+							<JoinRequestItem key={request.id} request={request} onAccept={handleAcceptRequest} onReject={handleRejectRequest} />
+						))
 				}
 			</Modal>
 
