@@ -71,11 +71,11 @@ function App() {
 	return (
 		<div>
 			<Routes>
-				<Route path="/" element={user ? <Layout user={user} onLogout={logout} /> : <Login onLogin={login} />} >
+				<Route path="/" element={user ? <Layout user={user} /> : <Login onLogin={login} />} >
 					<Route path='events' element={<Events />} />
 					<Route path='events/:eventCode' element={<Event />} />
 					<Route path='friends' element={<Friends />} />
-					<Route path='profile' element={<Profile />} />
+					<Route path='profile' element={<Profile onLogout={logout} />} />
 					<Route path='inbox' element={<Inbox />} />
 					<Route path='create-event' element={<CreateEvent />} />
 					<Route path='*' element={<h1>Not Found</h1>} />

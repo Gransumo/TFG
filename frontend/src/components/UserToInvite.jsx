@@ -43,11 +43,15 @@ export const UserToInvite = ({ user, event }) => {
 		}
 	}
 	return (
-		<div className="container border border-dark">
-			<p>{user.username}</p>
-			{!invited && !isMember && <i className="fa-solid fa-user-plus" onClick={sendInvitation}></i>}
-			{isMember && <i className="fa-solid fa-user-group"></i>}
-			{invited && !isMember && <i className="fa-solid fa-user-check"></i>}
+		<div className="container" style={{ borderBottom: '1px solid #FF6600' }}>
+			<div style={{ display: "flex", justifyContent: 'space-between', alignItems: "center" }} className="m-2">
+				<div className="d-flex align-items-center">
+					<span style={{ marginRight: "10px" }}>{user.username}</span>
+				</div>
+				{!invited && !isMember && <i className="fa-solid fa-user-plus" onClick={sendInvitation}></i>}
+				{isMember && <i className="fa-solid fa-user-group"></i>}
+				{invited && !isMember && <i className="fa-solid fa-user-check"></i>}
+			</div>
 		</div>
 	)
 }

@@ -13,6 +13,7 @@ const NotificationList = () => {
 		async function cargarNotificaciones() {
 			try {
 				const response = await fetchNotifications();
+				response.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 				setNotifications(response);
 				setLoading(false);
 			} catch (error) {

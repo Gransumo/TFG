@@ -1,4 +1,3 @@
-const { join } = require('path');
 const { JoinRequest, Member, Event } = require('../Models');
 const { fetchEventMembers } = require('../Utils/fetchEventMembers');
 
@@ -13,6 +12,8 @@ const getJoinRequests = async (req, res) => {
 		const member = await Member.findOne({ where: { eventId, userId } });
 
 		const joinRequests = await JoinRequest.findAll({ where: { eventId, status: 'pending' } });
+		console.log(joinRequests);
+		if (joinRequests.length === 0) return res.status(404).json({ error: 'No hay solicitudes de unión pendientes' });
 		const userNames = await fetchEventMembers(joinRequests.map(joinRequest => joinRequest.user_requester_Id));
 
 		joinRequests.forEach(joinRequest => {

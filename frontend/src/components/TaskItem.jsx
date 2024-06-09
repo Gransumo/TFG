@@ -36,15 +36,17 @@ export const TaskItem = ({ task, event, onModify }) => {
 	return (
 		<>
 			{isEditing ? (
-				<div>
-					<input type="text" value={currentText} onChange={handleChange} />
-					<button onClick={handleSave}>Save</button>
+				<div className='d-flex justify-content-between align-items-center'>
+					<input type="text" value={currentText} className='form-control' onChange={handleChange} />
+					<i class="fa-solid fa-check m-2" onClick={handleSave}></i>
 				</div>
 			) : (
-				<div>
-					{task.description}
-					<button onClick={handleEdit}>Edit</button>
-					<button onClick={handleDelete}>Delete</button>
+				<div className='d-flex justify-content-between align-items-center'>
+					<span>{task.description}</span>
+					<div style={{ marginLeft: '15px' }}>
+						<i className="fa-solid fa-pen-to-square" onClick={handleEdit}></i>
+						<i className="fa-solid fa-trash m-2" onClick={handleDelete}></i>
+					</div>
 				</div>
 			)
 			}

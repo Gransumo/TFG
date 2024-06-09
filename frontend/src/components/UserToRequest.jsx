@@ -42,14 +42,14 @@ const UserToRequest = ({ user }) => {
 	}
 
 	return (
-		<>
-			<div className="container border border-dark">
-				<p>{user.username}</p>
+		<div className="container" style={{ borderBottom: '1px solid #FF6600' }}>
+			<div style={{ display: "flex", justifyContent: 'space-between', alignItems: "center" }} className="m-2">
+				<span>{user.username}</span>
 				{!requested && !isFriend && <i className="fa-solid fa-user-plus" onClick={sendFriendRequest}></i>}
 				{isFriend && <i className="fa-solid fa-user-group"></i>}
 				{requested && !isFriend && <i className="fa-solid fa-user-check"></i>}
 			</div>
-		</>
+		</div>
 	)
 }
 

@@ -35,7 +35,7 @@ const FriendList = () => {
 		return <div>Cargando amigos...</div>;
 	}
 	return (
-		<div>
+		<div className="container p-3">
 			{friends.map((friend) => (
 				<Friend key={friend.id} friend={friend} onDelete={deleteFriend}/>
 			))}

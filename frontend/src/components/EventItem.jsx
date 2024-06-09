@@ -3,55 +3,23 @@ import Modal from "../partials/Modal";
 import { fetchExitEvent } from "../api/events";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { Col } from "react-bootstrap";
+import '../styles/general.css';
 
-const EventItem = ({ event, onLeave }) => {
-	const [modalOpen, setModalOpen] = useState(false);
-	const [warning, setWarning] = useState(null);
-
-	const salirEvento = async (id) => {
-		try {
-			const response = await fetchExitEvent(id);
-			onLeave(id);
-		} catch (error) {
-			const jsonError = JSON.parse(error.request.response);
-			console.error("Error saliendo del evento:", error);
-			if (error.request.status === 403) {
-				setWarning(jsonError.error)
-			}
-		}
-	}
-
-	const handlerLeave = () => {
-		salirEvento(event.id);
-	}
-
-	const handleModal = (status) => {
-		if (status === false) {
-			setWarning(null);
-		}
-		setModalOpen(status);
-	}
+const EventItem = ({ event }) => {
 
 	return (
-		<>
-			<Item className="border border-dark container p-2">
-				<div className="container m-0 p-0">
-					<Link to={`/events/${event.code}`}>
-						<h3>{event.name}</h3>
-					</Link>
+		<Col xs={12} sm={6} md={4} lg={3} className="d-flex justify-content-center">
+			<Item className="border-dark">
+				<div className="card-body">
+					<div className="container m-0 p-0">
+						<Link to={`/events/${event.code}`}>
+							<h3>{event.name}</h3>
+						</Link>
+					</div>
 				</div>
-				{event.isAdmin && (
-					<ExitButton className="btn btn-danger" onClick={() => { handleModal(true) }}>
-						<i className="fa-solid fa-right-from-bracket" onClick={() => { handleModal(true) }}></i>
-					</ExitButton>
-				)}
 			</Item>
-			<Modal isOpen={modalOpen} onClose={handleModal} modalTitle={'Salir de evento'}>
-				{warning && <div className="alert alert-danger">{warning}</div>}
-				<p>¿Estás seguro que deseas salir del evento {event.name}?</p>
-				<button onClick={handlerLeave} className="btn btn-danger">Salir</button>
-			</Modal>
-		</>
+		</Col>
 	);
 }
 
@@ -62,6 +30,12 @@ const ExitButton = styled.button`
 `;
 
 const Item = styled.div`
-	display: flex;
-	justify-content: space-between;
-`;
+		width: auto;
+		width: 300px;
+		border-radius: 10px;
+		background-color: #fff;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+		border: 1px solid #ccc;
+		padding: 1rem;
+		margin-bottom: 1rem;
+	`;

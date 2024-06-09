@@ -25,8 +25,6 @@ export const Event = () => {
 	const [modalExit, setModalExit] = useState(false);
 	const [modalTaskList, setModalTaskList] = useState(false);
 
-	const [warning, setWarning] = useState(null);
-
 	useEffect(() => {
 		async function cargarEvento() {
 			try {
@@ -55,14 +53,10 @@ export const Event = () => {
 
 	const salirEvento = async (id) => {
 		try {
-			const response = await fetchExitEvent(id);
+			await fetchExitEvent(id);
 			window.location.href = '/events';
 		} catch (error) {
-			const jsonError = JSON.parse(error.request.response);
 			console.error("Error saliendo del evento:", error);
-			if (error.request.status === 403) {
-				setWarning(jsonError.error)
-			}
 		}
 	}
 
@@ -83,48 +77,57 @@ export const Event = () => {
 		return <div>Cargando evento...</div>;
 	}
 	return (
-		<>
-			<div>
-				<h1>{event.name}</h1>
-				<h3>{event.code}</h3>
+		<div className="container p-5" style={{ marginTop: "50px" }}>
+			<div style={{ borderBottom: "2px solid #FF6600" }}>
+				<h1 className='text-center'>{event.name}</h1>
+				<h4 className='text-end '><span style={{ color: "gray" }}>{event.code}</span></h4>
 			</div>
-			<h2>Descripción:</h2>
+			<div className="text-end">
+				{event.isAdmin && <i className="fa-solid fa-pen-to-square m-2" onClick={() => { handleModal(true) }} style={{ fontSize: "1.5rem" }}></i>}
+				{event.isAdmin ? (
+					<i className="fa-solid fa-trash m-2" onClick={() => { handleExitModal(true) }} style={{ fontSize: "1.5rem" }}></i>
+				) : (
+					<i className="fa-solid fa-right-from-bracket m-2" onClick={() => { handleExitModal(true) }} style={{ fontSize: "1.5rem" }}></i>
+				)}
+				<i className="fa-solid fa-tasks m-2" onClick={() => { handleTaskList(true) }} style={{ fontSize: "1.5rem" }}></i>
+			</div>
+
+			<div className="row mt-4">
+				<div className="col-sm-12 col-md-6">
+					<h2 className="event-section">Fecha</h2>
+					<p>{event.date ? formatDate(event.date) : 'No definida'}</p>
+				</div>
+				<div className="col-sm-12 col-md-6">
+					<h2 className="event-section">Ubicacion</h2>
+					<p>{event.location ? event.location : 'No definida'}</p>
+				</div>
+			</div>
+			<h2 className="event-section">Descripción:</h2>
 			<p>{event.description}</p>
-			<h2>Fecha</h2>
-			<p>{(event.date) ? formatDate(event.date) : 'No definida'}</p>
-			<h2>Ubicacion</h2>
-			<p>{(event.location) ? event.location : 'No definida'}</p>
-			{<i className="fa-solid fa-tasks" onClick={() => { handleTaskList(true) }}></i>}
-			<Modal isOpen={modalTaskList} onClose={handleTaskList} modalTitle={'TAREAS'}>
-				{event.isAdmin ? (<TaskListAsAdmin event={event} />) : (<TaskListAsMember event={event} />)}
+			<Modal isOpen={modalTaskList} onClose={handleTaskList} modalTitle={'TAREAS'} >
+				{event.isAdmin ? <TaskListAsAdmin event={event} /> : <TaskListAsMember event={event} />}
 			</Modal>
 
-			{event.isAdmin && <i className="fa-solid fa-pen-to-square" onClick={() => { handleModal(true) }}></i>}
-			{(event.isAdmin)
-				? <i className="fa-solid fa-trash" onClick={() => { handleExitModal(true) }}></i>
-				: <i className="fa-solid fa-right-from-bracket" onClick={() => { handleExitModal(true) }}></i>
-			}
 			<Modal isOpen={modalOpen} onClose={handleModal} modalTitle={'EDITAR EVENTO'}>
 				<UpdateEventForm event={event} />
 			</Modal>
 			<Modal isOpen={modalExit} onClose={handleExitModal} modalTitle={'Salir de evento'}>
-				{(event.isAdmin)
-					? (
-						<div>
-							<p>¿Estás seguro de querer eliminar este evento? Se borrarán todos los registros del evento</p>
-							<button onClick={deleteEvent} className="btn btn-danger">Eliminar</button>
-						</div>
-					)
-					: (
-						<div>
-							<p>¿Estás seguro que deseas salir del evento {event.name}?</p>
-							<button onClick={() => { salirEvento(event.id) }} className="btn btn-danger">Salir</button>
-						</div>
-					)
-				}
+				{event.isAdmin ? (
+					<div>
+						<p>¿Estás seguro de querer eliminar este evento? Se borrarán todos los registros del evento</p>
+						<button onClick={deleteEvent} className="btn btn-danger">Eliminar</button>
+					</div>
+				) : (
+					<div>
+						<p>¿Estás seguro que deseas salir del evento {event.name}?</p>
+						<button onClick={() => { salirEvento(event.id) }} className="btn btn-danger">Salir</button>
+					</div>
+				)}
 			</Modal>
-			<MembersList getEvent={getEvent} />
-		</>
+			<div>
+				<MembersList getEvent={getEvent} />
+			</div>
+		</div>
 	)
 }
 

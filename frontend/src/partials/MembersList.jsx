@@ -11,10 +11,10 @@ export const MembersList = ({ getEvent }) => {
 	const [requests, setRequests] = useState([]);
 	const [members, setMembers] = useState([]);
 	const [loading, setLoading] = useState(true);
-	const [, setRender] = useState(0);
+	const [render, setRender] = useState(0);
 
 	const forceUpdate = () => {
-		setRender(prevRender => prevRender + 1);
+		setRender(render + 1);
 	};
 
 	useEffect(() => {
@@ -43,7 +43,7 @@ export const MembersList = ({ getEvent }) => {
 		}
 		cargarMiembros();
 		cargarSolicitudes();
-	}, []);
+	}, [render]);
 
 	const deleteMember = async (memberId) => {
 		try {
@@ -82,6 +82,7 @@ export const MembersList = ({ getEvent }) => {
 			console.log(response);
 			const newRequests = requests.filter(request => request.id !== requestId);
 			setRequests(newRequests);
+			forceUpdate();
 		} catch (error) {
 			console.error("Error rechazando solicitud:", error);
 		}
@@ -92,12 +93,19 @@ export const MembersList = ({ getEvent }) => {
 	}
 	return (
 		<div>
-			<h2>Participantes</h2>
-			{getEvent().isAdmin && <button className="btn btn-primary" onClick={() => { handleModalAdd(true) }}>Agregar miembro</button>}
+			<div className='row'>
+				<div className='col-6'>
+					<h2 style={{display: 'flex', alignItems: 'center', height: 'auto' }}>Participantes</h2>
+				</div>
+				<div style={{ display: 'flex', justifyContent: 'end' }} className='col-md-6'>
+					{getEvent().isAdmin && <button className="btn btn-primary" onClick={() => { handleModalAdd(true) }}>Agregar miembro</button>}
+					<div className="m-2"></div>
+					{getEvent().isAdmin && getEvent().private && <button className="btn btn-primary" onClick={() => { handleModalRequest(true) }}>Ver Solicitudes de Union</button>}
+				</div>
+			</div>
 			<Modal isOpen={modalOpenAdd} onClose={handleModalAdd} modalTitle={'Invitar Miembro'}>
 				<SearchUsers action={'Invitation'} event={getEvent()} />
 			</Modal>
-			{getEvent().isAdmin && getEvent().private && <button className="btn btn-primary" onClick={() => { handleModalRequest(true) }}>Ver Solicitudes de Union</button>}
 			<Modal isOpen={modalOpenRequest} onClose={handleModalRequest} modalTitle={"Solicitudes de Union"}>
 				{
 					(requests.length === 0) ?
@@ -107,10 +115,11 @@ export const MembersList = ({ getEvent }) => {
 						))
 				}
 			</Modal>
-
-			{members.map((member) => (
-				<MemberItem key={member.id} member={member} onDelete={deleteMember} getEvent={getEvent} />
-			))}
+			<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }} className='container'>
+				{members.map((member) => (
+					<MemberItem key={member.id} member={member} onDelete={deleteMember} getEvent={getEvent} />
+				))}
+			</div>
 		</div>
 	)
 }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { fetchMembers, fetchCreateMember, fetchCreateJoinRequest, fetchJoinRequest } from '../api/events';
+import { fetchMembers, fetchCreateMember, fetchCreateJoinRequest, fetchJoinRequests } from '../api/events';
+import styled from 'styled-components';
 
 export const EventSearched = ({ event }) => {
 	const [isMember, setIsMember] = useState(false);
@@ -19,7 +20,8 @@ export const EventSearched = ({ event }) => {
 		async function checkRequested() {
 			try {
 				console.log(event);
-				const response = await fetchJoinRequest(event.id);
+				const response = await fetchJoinRequests(event.id);
+				console.log(response);
 				setIsRequested(true);
 			} catch (error) {
 				setIsMember(false);
@@ -49,17 +51,23 @@ export const EventSearched = ({ event }) => {
 	}
 
 	return (
-		<div>
-			<div className="container border border-dark">
-				<p>{event.name}</p>
+		<Item>
+			<span>{event.name}</span>
+			<div>
 				{isMember && <i className="fa-solid fa-user-group"></i>}
 				{!isMember && event.private && <i className="fa-solid fa-lock"></i>}
 				{!isMember && event.private && !isRequested && (<i className="fa-solid fa-user-plus" onClick={handleJoinRequest}></i>)}
 				{!isMember && event.private && isRequested && <i className="fa-solid fa-user-check"></i>}
 				{!isMember && !event.private && <i className="fa-solid fa-user-plus" onClick={handleJoin}></i>}
 			</div>
-		</div>
+		</Item>
 	)
 }
+
+const Item = styled.div`
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+`;
 
 export default EventSearched;

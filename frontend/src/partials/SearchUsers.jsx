@@ -34,11 +34,10 @@ const SearchUsers = ({ action, event }) => {
 	return (
 		<div className="container">
 			<div>
-				<div>Buscar amigos</div>
 				<input type="text" className="form-control" placeholder="Nombre de usuario" value={busqueda} onChange={(e) => {handleBusqueda(e)}} />
 			</div>
-			<div>
-				{loading && <div>Cargando amigos...</div>}
+			<div className="mt-3">
+				{loading && <div>Cargando...</div>}
 				{users.map((user) => (
 					action === 'Request' ? (
 						<UserToRequest key={user.id} user={user} />

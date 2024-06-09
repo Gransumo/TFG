@@ -5,7 +5,6 @@ const Modal = ({ isOpen, onClose, modalTitle, children }) => {
 	if (!isOpen) return null;
 
 	return (
-		// Se construye el modal con los styled-components
 		<OverLay>
 			<ModalContent>
 				<ModalTitle>
@@ -55,7 +54,7 @@ const ModalTitle = styled.div`
     justify-content: space-between;
     margin-bottom: 20px;
     padding-bottom:10px;
-    border-bottom: 1px solid #1766DC;
+    border-bottom: 1px solid #FF6600;
     
 
     h3 {
